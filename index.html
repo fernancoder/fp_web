@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Ejemplo Web</title>
+</head>
+<body>
+  <script>
+    function getResults(terms){
+      $.getJSON('http://www.fernancoder.com:2031?action=query&terms=' + terms.replace(/ /g,"%20") + '&first=0&size=20&callback=?', function(json){
+        var buffer = '';
+
+        if ( json.status == 'success' )
+        {
+          if ( json.response.totalResults == 0 )
+            buffer = 'No hay resultados para esta búsqueda';
+          else
+          {
+            if ( json.response.totalResults == 1 )
+            {
+              buffer = 'Se ha localizado <strong>1</strong> registro';
+            }
+            else
+            {
+              buffer = 'Se han localizado <strong>' + json.response.totalResults + '</strong> registros';
+            }
+            buffer += '<table class="table"><tbody>';
+            numRecords = Math.min(20,json.response.totalResults);
+            for (var i = 0; i < numRecords; i++) {
+              record = json.response.records[i];
+              buffer += '<tr><td>' + record.title + '</td></tr>';
+            }
+            buffer += '</tbody></table>';
+          }
+        }
+        else
+          buffer = 'Hay algo que no está funcionando correctamente. Inténtalo más tarde.'
+
+        $('#results').html(buffer);
+      });
+    }
+  </script>
+
+  <div>
+    Buscar: <input type="search" autocomplete="off" onkeyup="getResults(this.value)">
+  </div>
+  <div id="results"></div>
+
+  <script src="jquery.js"></script>
+</body>
+</html>
